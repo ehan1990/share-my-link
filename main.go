@@ -34,10 +34,10 @@ func statusEndpoint(w http.ResponseWriter, req *http.Request) {
 
 func randomEndpoint(w http.ResponseWriter, r *http.Request) {
 	body, err := os.ReadFile("static/index.html")
-    if err != nil {
-        log.Fatalf("unable to read file: %v", err)
-    }
-	log.Println("called random")
+	if err != nil {
+		log.Fatalf("unable to read file: %v", err)
+	}
+		log.Println("called random")
 	w.Write(body)
 }
 
