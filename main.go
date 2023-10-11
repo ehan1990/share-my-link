@@ -37,7 +37,7 @@ func randomEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalf("unable to read file: %v", err)
 	}
-		log.Println("called random")
+	log.Println("called random")
 	w.Write(body)
 }
 
