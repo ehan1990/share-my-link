@@ -1,9 +1,7 @@
 package main
 
 import (
-	b64 "encoding/base64"
 	"encoding/json"
-	"fmt"
 	"os"
 	"log"
 	"net/http"
@@ -34,28 +32,6 @@ func statusEndpoint(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func encodeEndpoint(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	decoder := json.NewDecoder(req.Body)
-    var body EncodeBody
-    err := decoder.Decode(&body)
-
-	if err != nil {
-        panic(err)
-    }
-
-	b64Encoded := b64.URLEncoding.EncodeToString([]byte(body.Url))
-    body.Encoded = fmt.Sprintf("http://35.91.228.41/%s", b64Encoded)
-
-	res, err := json.Marshal(body)
-	if err != nil {
-		panic(err)
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
-	return
-}
-
 func randomEndpoint(w http.ResponseWriter, r *http.Request) {
 	body, err := os.ReadFile("static/index.html")
     if err != nil {
@@ -65,23 +41,9 @@ func randomEndpoint(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-func redirectToURL(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL.Path[1:])
-	newsLink, err := b64.URLEncoding.DecodeString(r.URL.Path[1:])
-
-	if err != nil {
-		panic(err)
-	}
-	
-	log.Printf("%v\n", string(newsLink))
-	http.Redirect(w, r, string(newsLink), http.StatusMovedPermanently)
-}
-
 func main() {
 	log.Printf("running version %v", VERSION)
 	http.HandleFunc("/status", statusEndpoint)
-	http.HandleFunc("/encode", encodeEndpoint)
 	http.HandleFunc("/random", randomEndpoint)
-	// http.HandleFunc("/", redirectToURL)
 	http.ListenAndServe(":80", nil)
 }
